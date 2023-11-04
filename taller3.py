@@ -1,7 +1,11 @@
 import numpy as np
 
-a=np.array([[0,0,0],[0,0,0]])
-b=np.array([[0,0,0],[0,0,0]])
+a=np.array([[5,-4,-2],[5,-5,4],[2,5,-4],[-5,4,3],[3,-4,-3]])
+b=np.array([5,-2,-3])
+c=np.array([[0,-1,-1,3],[5,-5,-2,2],[1,0,4,5]])
+d=np.array([[0,-2,3],[-3,-1,-3]])
+e=np.array([[2,-5,5,1],[5,2,-7,-6],[-6,-1,7,-4],[5,4,1,-5]])
+f=np.array([[0,4,-7,1,-6],[-1,-6,-5,1,1],[2,-1,-6,5,-5],[-3,-6,6,3,5]])
 def ausiliary_product (a,b):
     D=np.zeros((a.shape[0],b.shape[1]))
     for i in range(a.shape[0]):
@@ -20,6 +24,12 @@ def matriz_ptoduct (a,b):
         return ausiliary_product(a,b)
     
 print(matriz_ptoduct(a,b))
+print(matriz_ptoduct(c,d))
+print(matriz_ptoduct(e,f))
+print("del a). aXb")
+print(matriz_ptoduct(a,b))
+print("del a). bXa")
+print(matriz_ptoduct(b,a))
 
 #Punto 2
 MF = np.array([[3,1,-1],[1,-2,1],[4,-1,1]])
@@ -65,30 +75,65 @@ print("Las fuerzas que se ven presentes en el objeto son:{0}" .format(eliminacio
 print("Las corrientes que se ven presentes en el objeto son:{0}" .format(eliminacion_y_solucion(MI,MIS)[1]))
 
 #Punto 3
-def normalizacion(v):
-  suma=0
-  for i in v:
-     suma+= (i[0])**2
-  norma=(suma**0.5)
-  if norma==0:
-      return v
-  else:
-    vector_normal=v/norma
-    return vector_normal
+k = 23
+m1 = 13
+m2 = 13
+m3 = 5
 
-def tres(A,v_o):
-  A=A
-  iteracion_maxima=10000
-  iteracion=0
-  while iteracion<iteracion_maxima:
-      v=A.dot(v_o)
-      v= normalizacion(v)
-      v_o=v
-      iteracion+=1
-  return v
+A=np.array([[(-2*k)/m1,k/m1,0.],[k/m2,(-2*k)/m2,k/m2,],[0.,k/m3,(-2*k)/m3]])
 
-matriz=np.array([[-2,1,0],[1,-2,1],[0,1,-2]])
-vector0=np.array([[1],[1],[900]])
-respuesta_01=tres(matriz,vector0)
-Valor=((matriz.dot(respuesta_01))[0])/(vector0[0])
-print(Valor*2)
+b = np.array([1.,1.,3.])
+
+
+def norma(v):
+
+    s = 0
+
+    for i in range(v.shape[0]):
+        s += v[i]**2
+    return np.sqrt(s) 
+
+def eigenvalue(A,v,k):
+
+    z = v
+    q = z/norma(z)
+    Ai= np.linalg.inv(A)
+
+    for i in range(k):
+        z = np.dot(Ai,q)
+        q = z/norma(z)
+        q2 = np.transpose(q)
+        sup = np.dot(q2,Ai)
+        r = np.dot(q2,sup)
+        w=np.sqrt(np.abs(1/r))
+
+    return (-q,w)
+
+v1,e1 = eigenvalue(A,b,90)
+
+w1 = np.sqrt(np.abs(e1))
+
+print(v1,e1)
+
+def ptm(w,A):
+    wt = w.T
+    p = np.dot(wt,A)
+    f = np.dot(p,w)
+    return f
+
+def eigenvectors(A,b,k):
+    
+    z = b
+       
+    for i in range(k):
+        w = z/norma(z)  
+        mu =  ptm(w,A)
+        z = np.matmul(A,w)
+    
+    return w,mu
+
+v,e = eigenvectors(A,b,10)
+
+w = np.sqrt(np.abs(e))
+
+print(v,w)
